@@ -46,7 +46,7 @@ namespace NgramView.Providers.Google.Offline.Grabber {
             ).Split(' ')
         };
 
-        static string GetNgramFullFileName(string type, string name = null) {
+        public static string GetNgramFullFileName(string type, string name = null) {
             return string.Format(NgramFullFileNameFormat,
                 type == TotalCountsType ? TotalCountsType : type + "gram",
                 name == null ? string.Empty : "-" + name,

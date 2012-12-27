@@ -42,7 +42,14 @@
   <ItemGroup>
     <Compile Include="Grabber\IGrabberCallbackObject.cs" />
     <Compile Include="Grabber\NgramDataGrabber.cs" />
+    <Compile Include="OfflineGoogleNgramProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NgramView.Core\NgramView.Core.csproj">
+      <Project>{40C4B794-1729-4498-A32A-90326D96E177}</Project>
+      <Name>NgramView.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -48,6 +48,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NgramView.Core\NgramView.Core.csproj">
+      <Project>{40C4B794-1729-4498-A32A-90326D96E177}</Project>
+      <Name>NgramView.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NgramView.Providers.Google.Offline\NgramView.Providers.Google.Offline.csproj">
       <Project>{C3CD4579-3FD1-4CBF-AA65-34965190BAC7}</Project>
       <Name>NgramView.Providers.Google.Offline</Name>

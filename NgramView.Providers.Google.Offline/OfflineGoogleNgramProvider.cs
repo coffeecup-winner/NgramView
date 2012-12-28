@@ -16,14 +16,49 @@ namespace NgramView.Providers.Google.Offline {
             this.dataFolder = dataFolder;
         }
         public NgramDataEntry Query(string ngram) {
-            NgramDataEntry dataEntry = null;
             string filename = FindFileName(ngram);
+            if(File.Exists(Path.Combine(dataFolder, Path.ChangeExtension(filename, ".idx.gz"))))
+                return QueryOptimized(ngram, Path.ChangeExtension(filename, ".idx.gz"));
+            return QueryRaw(ngram, filename);
+        }
+        NgramDataEntry QueryRaw(string ngram, string filename) {
 #warning Move the next call to a separate class
             using(FileStream stream = File.OpenRead(Path.Combine(dataFolder, filename))) {
                 GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
                 StreamReader reader = new StreamReader(gzStream);
                 return FindAndReadEntry(reader, ngram);
             }
+        }
+        NgramDataEntry QueryOptimized(string ngram, string filename) {
+            NgramDataEntry dataEntry = new NgramDataEntry(ngram);
+            int index = 0;
+            using(FileStream stream = File.OpenRead(Path.Combine(dataFolder, filename))) {
+                GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
+                StreamReader reader = new StreamReader(gzStream);
+                while(!reader.EndOfStream && reader.ReadLine() != ngram)
+                    index++;
+            }
+            using(FileStream stream = File.OpenRead(Path.Combine(dataFolder, filename.Replace(".idx.gz", ".dat")))) {
+                const int count = 3 + 2 + 2 + 2;
+                byte[] bytes = new byte[count];
+                int entryIndex;
+                do {
+                    int check = stream.Read(bytes, 0, count);
+                    System.Diagnostics.Debug.Assert(count == check);
+                    entryIndex = (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
+                } while(entryIndex != index);
+                do {
+                    int year = (bytes[4] << 8) | bytes[3];
+                    int occurencesCount = (bytes[6] << 8) | bytes[5];
+                    int distinctBooksCount = (bytes[8] << 8) | bytes[7];
+                    dataEntry.Add(year, occurencesCount, distinctBooksCount);
+                    
+                    int check = stream.Read(bytes, 0, count);
+                    System.Diagnostics.Debug.Assert(count == check || count == 0);
+                    entryIndex = (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
+                } while(entryIndex == index && count != 0);
+            }
+            return dataEntry;
         }
         public void Optimize(string type, string name) {
             string filename = NgramDataGrabber.GetNgramFullFileName(type, name);
@@ -34,8 +69,9 @@ namespace NgramView.Providers.Google.Offline {
                 List<string> ngrams = new List<string>();
                 //using(GZipStream outStream = new GZipStream(File.Create(Path.Combine(dataFolder, Path.ChangeExtension(filename, ".dat.gz"))), CompressionMode.Compress)) {
                 using(Stream outStream = File.Create(Path.Combine(dataFolder, Path.ChangeExtension(filename, ".dat")))) {
+                    string line = null;
                     while(!reader.EndOfStream) {
-                        var dataEntry = ReadEntry(reader);
+                        var dataEntry = ReadEntry(reader, ref line);
                         int index = ngrams.Count;
                         ngrams.Add(dataEntry.Ngram);
                         foreach(var yearEntry in dataEntry.YearEntries) {
@@ -65,20 +101,26 @@ namespace NgramView.Providers.Google.Offline {
                 }
             }
         }
-        static NgramDataEntry ReadEntry(StreamReader reader) {
-            string line = reader.ReadLine();
-            return ReadEntry(reader, line.Split('\t')[0], line);
+        static NgramDataEntry ReadEntry(StreamReader reader, ref string line) {
+            if(line == null)
+                line = reader.ReadLine();
+            return ReadEntry(reader, line.Split('\t')[0], ref line);
         }
         static NgramDataEntry FindAndReadEntry(StreamReader reader, string ngram) {
-            return ReadEntry(reader, ngram, FindEntry(reader, ngram));
+            string line = FindEntry(reader, ngram);
+            return ReadEntry(reader, ngram, ref line);
         }
-        static NgramDataEntry ReadEntry(StreamReader reader, string ngram, string line) {
+        static NgramDataEntry ReadEntry(StreamReader reader, string ngram, ref string line) {
             NgramDataEntry dataEntry = new NgramDataEntry(ngram);
             do {
                 string[] parts = line.Split('\t');
                 dataEntry.Add(int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]));
+                if(reader.EndOfStream) {
+                    line = null;
+                    break;
+                }
                 line = reader.ReadLine();
-            } while(!reader.EndOfStream && line.StartsWith(ngram));
+            } while(line.StartsWith(ngram));
             return dataEntry;
         }
         static string FindEntry(StreamReader reader, string ngram) {

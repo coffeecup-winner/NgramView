@@ -9,8 +9,8 @@ using NgramView.Providers.Google.Offline.Grabber;
 namespace ngram {
     class Program {
         static void Main(string[] args) {
-            //args = new string[] { "-e", "systemcontrolled_VERB" };
-            args = new string[] { "-u", "1", "s" };
+            args = new string[] { "-e", "sustanze" };
+            //args = new string[] { "-u", "1", "s" };
             if(args.Length == 2 && args[0] == "-d") {
                 NgramDataGrabber.DownloadTo(args[1], new GrabberCallbackObject());
             } else if(args.Length == 2 && args[0] == "-e") {

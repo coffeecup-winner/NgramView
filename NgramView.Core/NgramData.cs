@@ -27,5 +27,8 @@ namespace NgramView.Data {
         public void Add(int year, int occurencesCount, int distinctBooksCount) {
             this.yearEntries.Add(new NgramYearEntry(year, occurencesCount, distinctBooksCount));
         }
+        public void Add(NgramYearEntry entry) {
+            this.yearEntries.Add(entry);
+        }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 using NgramView.Data;
 
 namespace NgramView.Providers.Google.Offline {
-    class RawNgramData : BaseNgramData {
+    public class RawNgramData : BaseNgramData {
         public RawNgramData(string filepath)
             : base(filepath) {
         }

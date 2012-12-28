@@ -31,32 +31,30 @@ namespace NgramView.Providers.Google.Offline {
         }
         NgramDataEntry QueryOptimized(string ngram, string filename) {
             NgramDataEntry dataEntry = new NgramDataEntry(ngram);
-            int index = 0;
+            int offset = 0;
+            int nextOffset = -1;
             using(FileStream stream = File.OpenRead(Path.Combine(dataFolder, filename))) {
                 GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
                 StreamReader reader = new StreamReader(gzStream);
-                while(!reader.EndOfStream && reader.ReadLine() != ngram)
-                    index++;
+                string line;
+                while(!(line = reader.ReadLine()).StartsWith(ngram + '\t') && !reader.EndOfStream) { }
+                offset = int.Parse(line.Split('\t')[1]);
+                line = reader.ReadLine();
+                if(line != null)
+                    nextOffset = int.Parse(line.Split('\t')[1]);
             }
             using(FileStream stream = File.OpenRead(Path.Combine(dataFolder, filename.Replace(".idx.gz", ".dat")))) {
-                const int count = 3 + 2 + 2 + 2;
-                byte[] bytes = new byte[count];
-                int entryIndex;
+                stream.Seek(offset, SeekOrigin.Begin);
                 do {
-                    int check = stream.Read(bytes, 0, count);
-                    System.Diagnostics.Debug.Assert(count == check);
-                    entryIndex = (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
-                } while(entryIndex != index);
-                do {
-                    int year = (bytes[4] << 8) | bytes[3];
-                    int occurencesCount = (bytes[6] << 8) | bytes[5];
-                    int distinctBooksCount = (bytes[8] << 8) | bytes[7];
-                    dataEntry.Add(year, occurencesCount, distinctBooksCount);
-                    
+                    const int count = 2 + 2 + 2;
+                    byte[] bytes = new byte[count];
                     int check = stream.Read(bytes, 0, count);
                     System.Diagnostics.Debug.Assert(count == check || count == 0);
-                    entryIndex = (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
-                } while(entryIndex == index && count != 0);
+                    int year = (bytes[1] << 8) | bytes[0];
+                    int occurencesCount = (bytes[3] << 8) | bytes[2];
+                    int distinctBooksCount = (bytes[5] << 8) | bytes[4];
+                    dataEntry.Add(year, occurencesCount, distinctBooksCount);
+                } while(stream.Position < stream.Length && stream.Position < nextOffset);
             }
             return dataEntry;
         }
@@ -72,30 +70,24 @@ namespace NgramView.Providers.Google.Offline {
                     string line = null;
                     while(!reader.EndOfStream) {
                         var dataEntry = ReadEntry(reader, ref line);
-                        int index = ngrams.Count;
-                        ngrams.Add(dataEntry.Ngram);
+                        ngrams.Add(dataEntry.Ngram + "\t" + outStream.Position);
                         foreach(var yearEntry in dataEntry.YearEntries) {
-                            const int bytesCount = 3 + 2 + 2 + 2;
+                            const int bytesCount = 2 + 2 + 2;
                             byte[] bytes = new byte[bytesCount];
-                            byte[] buffer = BitConverter.GetBytes(index);
+                            byte[] buffer = BitConverter.GetBytes(yearEntry.Year);
                             bytes[0] = buffer[0];
                             bytes[1] = buffer[1];
-                            bytes[2] = buffer[2];
-                            buffer = BitConverter.GetBytes(yearEntry.Year);
-                            bytes[3] = buffer[0];
-                            bytes[4] = buffer[1];
                             buffer = BitConverter.GetBytes(yearEntry.OccurencesCount);
-                            bytes[5] = buffer[0];
-                            bytes[6] = buffer[1];
+                            bytes[2] = buffer[0];
+                            bytes[3] = buffer[1];
                             buffer = BitConverter.GetBytes(yearEntry.DistinctBooksCount);
-                            bytes[7] = buffer[0];
-                            bytes[8] = buffer[1];
+                            bytes[4] = buffer[0];
+                            bytes[5] = buffer[1];
                             outStream.Write(bytes, 0, bytesCount);
                         }
                     }
                 }
-                using(GZipStream outStream = new GZipStream(File.Create(Path.Combine(dataFolder, Path.ChangeExtension(filename, ".idx.gz"))), CompressionMode.Compress)) {
-                    StreamWriter writer = new StreamWriter(outStream);
+                using(StreamWriter writer = new StreamWriter(new GZipStream(File.Create(Path.Combine(dataFolder, Path.ChangeExtension(filename, ".idx.gz"))), CompressionMode.Compress))) {
                     foreach(var ngram in ngrams)
                         writer.WriteLine(ngram);
                 }

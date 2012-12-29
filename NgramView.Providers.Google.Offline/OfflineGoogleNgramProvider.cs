@@ -7,6 +7,7 @@ using System.Text;
 using NgramView.Data;
 using NgramView.Providers;
 using NgramView.Providers.Google.Offline.Grabber;
+using NgramView.Providers.Google.Offline.OptimizedData;
 
 namespace NgramView.Providers.Google.Offline {
     public class OfflineGoogleNgramProvider : INgramProvider {
@@ -18,7 +19,7 @@ namespace NgramView.Providers.Google.Offline {
         public NgramDataEntry Query(string ngram) {
             string filename = FindFileName(ngram);
             string filepath = Path.Combine(this.dataFolder, filename);
-            string optimizedFilepath = Path.ChangeExtension(filepath, "idx.gz");
+            string optimizedFilepath = Path.ChangeExtension(filepath, "idx");
             INgramProvider data = File.Exists(optimizedFilepath) ? (INgramProvider)new OptimizedNgramData(optimizedFilepath) : new RawNgramData(filepath);
             return data.Query(ngram);
         }

@@ -1,67 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using NgramView.Data;
-using System.Diagnostics;
 
-namespace NgramView.Providers.Google.Offline {
-    public class OptimizedNgramData : BaseNgramData {
-        public OptimizedNgramData(string filepath)
-            : base(filepath) {
-        }
-        public void Optimize() {
-            using(FileStream stream = File.OpenRead(FilePath)) {
-                GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
-                StreamReader reader = new StreamReader(gzStream);
-                List<string> ngrams = new List<string>();
-                using(Stream outStream = File.Create(Path.ChangeExtension(FilePath, ".dat"))) {
-                    string line = null;
-                    while(!reader.EndOfStream) {
-                        var dataEntry = ReadEntry(reader, ref line);
-                        ngrams.Add(dataEntry.Ngram + "\t" + outStream.Position);
-                        foreach(var yearEntry in dataEntry.YearEntries)
-                            WriteEntry(outStream, yearEntry);
-                    }
-                }
-                using(StreamWriter writer = new StreamWriter(new GZipStream(File.Create(Path.ChangeExtension(FilePath, ".idx.gz")), CompressionMode.Compress))) {
-                    foreach(var ngram in ngrams)
-                        writer.WriteLine(ngram);
-                }
-            }
-        }
-        public override NgramDataEntry Query(string ngram) {
-            NgramDataEntry dataEntry = new NgramDataEntry(ngram);
-            int offset = 0;
-            int nextOffset = -1;
-            using(FileStream stream = File.OpenRead(FilePath)) {
-                GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
-                StreamReader reader = new StreamReader(gzStream);
-                string line;
-                while(!(line = reader.ReadLine()).StartsWith(ngram + '\t') && !reader.EndOfStream) { }
-                offset = int.Parse(line.Split('\t')[1]);
-                line = reader.ReadLine();
-                if(line != null)
-                    nextOffset = int.Parse(line.Split('\t')[1]);
-            }
-            using(FileStream stream = File.OpenRead(FilePath.Replace(".idx.gz", ".dat"))) {
-                stream.Seek(offset, SeekOrigin.Begin);
-                do {
-                    dataEntry.Add(ReadEntry(stream));
-                } while(stream.Position < stream.Length && stream.Position < nextOffset);
-            }
-            return dataEntry;
-        }
-        void WriteEntry(Stream stream, NgramYearEntry yearEntry) {
-            new OptimizedNgramDataEntry(yearEntry).WriteTo(stream);
-        }
-        NgramYearEntry ReadEntry(Stream stream) {
-            return new OptimizedNgramDataEntry(stream).Entry;
-        }
-    }
-
+namespace NgramView.Providers.Google.Offline.OptimizedData {
     public class OptimizedNgramDataEntry {
         /*
          * Short bitmap fbbb oooy | yyyy yyyy

@@ -67,6 +67,7 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     unsafe public struct HeaderTableEntry {
         public uint NgramOffset;
         public uint NgramLength;

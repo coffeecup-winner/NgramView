@@ -60,14 +60,10 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             stream.Flush();
         }
         public OptimizedNgramHeaderEntry Find(string ngram, Stream stream) {
-            if(this.searchableHeaderTable == null)
-                BuildSearchableHeaderTable();
-            int result = this.searchableHeaderTable.BinarySearch(new HeaderTableEntry { }, new HeaderTableEntryComparer(ngram, stream));
-            var tableEntry = this.searchableHeaderTable[result];
+            HeaderTableEntry dummy = new HeaderTableEntry();
+            int result = Array.BinarySearch(this.headerTable, 0, this.headerTable.Length, dummy, new HeaderTableEntryComparer(ngram, stream));
+            var tableEntry = this.headerTable[result];
             return new OptimizedNgramHeaderEntry(ngram, tableEntry.YearsDataOffset) { EndOffset = tableEntry.YearsDataLength };
-        }
-        void BuildSearchableHeaderTable() {
-            this.searchableHeaderTable = new List<HeaderTableEntry>(this.headerTable);
         }
     }
 

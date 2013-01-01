@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0339AB7B-A003-446F-8259-66AE1CE76500}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{523771FC-8AAF-4DD1-8F66-B240F636D0DC}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NgramView.Controls</RootNamespace>
-    <AssemblyName>NgramView.Controls</AssemblyName>
+    <RootNamespace>NgramView.UI</RootNamespace>
+    <AssemblyName>NgramView.UI</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -33,31 +33,62 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chart\Data\Series.cs" />
-    <Compile Include="Chart\ViewInfo\GridViewInfo.cs" />
-    <Compile Include="Chart\ViewInfo\SeriesViewInfo.cs" />
-    <Compile Include="ViewInfo\BaseViewInfo.cs" />
-    <Compile Include="Chart\ChartControl.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Chart\ViewInfo\ChartViewInfo.cs" />
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewInfo\TopLevelViewInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NgramView.Controls\NgramView.Controls.csproj">
+      <Project>{0339AB7B-A003-446F-8259-66AE1CE76500}</Project>
+      <Name>NgramView.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NgramView.Core\NgramView.Core.csproj">
+      <Project>{40C4B794-1729-4498-A32A-90326D96E177}</Project>
+      <Name>NgramView.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NgramView.Providers.Google.Offline\NgramView.Providers.Google.Offline.csproj">
+      <Project>{C3CD4579-3FD1-4CBF-AA65-34965190BAC7}</Project>
+      <Name>NgramView.Providers.Google.Offline</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

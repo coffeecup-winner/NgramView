@@ -27,6 +27,7 @@ namespace NgramView.UI
             for(int i = 1500; i <= 2008; i++)
                 table.Rows.Add(i);
             chartControl1.ArgumentDelta = 50;
+            chartControl1.ValueLogDelta = 10;
             chartControl1.ShowData(table);
         }
         void tbQuery_KeyDown(object sender, KeyEventArgs e) {

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chart\Data\Series.cs" />
+    <Compile Include="Chart\Data\SeriesCollection.cs" />
     <Compile Include="Chart\ViewInfo\GridViewInfo.cs" />
     <Compile Include="Chart\ViewInfo\SeriesViewInfo.cs" />
     <Compile Include="ViewInfo\BaseViewInfo.cs" />

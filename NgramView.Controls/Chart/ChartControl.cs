@@ -12,6 +12,7 @@ namespace NgramView.Controls.Chart {
         readonly ChartViewInfo viewInfo;
         DataTable table;
         int argumentDelta;
+        int valueLogDelta;
 
         public ChartControl() {
             this.viewInfo = new ChartViewInfo(this);
@@ -24,6 +25,7 @@ namespace NgramView.Controls.Chart {
         }
         public DataTable Table { get { return table; } }
         public int ArgumentDelta { get { return argumentDelta; } set { argumentDelta = value; } }
+        public int ValueLogDelta { get { return valueLogDelta; } set { valueLogDelta = value; } }
         public void ShowData(DataTable table) {
             this.table = table;
             ViewInfo.Update();

@@ -17,20 +17,32 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
                 GZipStream gzStream = new GZipStream(stream, CompressionMode.Decompress);
                 StreamReader reader = new StreamReader(gzStream);
                 OptimizedNgramHeader header = new OptimizedNgramHeader();
+                List<List<int>> years = new List<List<int>>();
                 using(Stream outStream = File.Create(Path.ChangeExtension(FilePath, ".dat"))) {
                     string line = null;
                     while(!reader.EndOfStream) {
                         var dataEntry = ReadEntry(reader, ref line);
                         Debug.Assert(outStream.Position <= uint.MaxValue);
-                        var prevHeaderEntry = header.Add(dataEntry.Ngram, (uint)outStream.Position);
-                        foreach(var yearEntry in dataEntry.YearEntries)
-                            WriteEntry(outStream, yearEntry);
-                        prevHeaderEntry.EndOffset = (uint)outStream.Position;
+                        //var prevHeaderEntry = header.Add(dataEntry.Ngram, (uint)outStream.Position);
+                        //foreach(var yearEntry in dataEntry.YearEntries)
+                        //    WriteEntry(outStream, yearEntry);
+                        years.Add(dataEntry.YearEntries.Select(e => e.Year).ToList());
+                        //prevHeaderEntry.EndOffset = (uint)outStream.Position;
                     }
                 }
-                header.Build();
-                using(Stream headerStream = File.Create(Path.ChangeExtension(FilePath, ".idx"))) {
-                    header.WriteTo(headerStream);
+                //header.Build();
+                //using(Stream headerStream = File.Create(Path.ChangeExtension(FilePath, ".idx"))) {
+                //    header.WriteTo(headerStream);
+                //}
+                using(Stream outStream = File.Create(Path.ChangeExtension(FilePath, ".stat"))) {
+                    StreamWriter writer = new StreamWriter(outStream);
+                    writer.WriteLine("entries count:   " + years.Count);
+                    writer.WriteLine("years count:     " + years.Select(list => list.Count).Sum());
+                    writer.WriteLine("avg years count: " + years.Select(list => list.Count).Average());
+                    writer.WriteLine("min year:        " + years.Select(list => list.Min()).Min());
+                    writer.WriteLine("avg min year:    " + years.Select(list => list.Min()).Average());
+                    writer.WriteLine("max min year:    " + years.Select(list => list.Min()).Max());
+                    writer.Close();
                 }
             }
         }
@@ -50,10 +62,10 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             return dataEntry;
         }
         void WriteEntry(Stream stream, NgramYearEntry yearEntry) {
-            new OptimizedNgramDataEntry(yearEntry).WriteTo(stream);
+            new OptimizedNgramYearEntry(yearEntry).WriteTo(stream);
         }
         NgramYearEntry ReadEntry(Stream stream) {
-            return new OptimizedNgramDataEntry(stream).Entry;
+            return new OptimizedNgramYearEntry(stream).Entry;
         }
     }
 }

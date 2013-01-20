@@ -9,8 +9,8 @@ using NgramView.Providers.Google.Offline.Grabber;
 namespace ngram {
     class Program {
         static void Main(string[] args) {
-            args = new string[] { "-e", "systemcontrolled_VERB" };
-            //args = new string[] { "-u", "1", "s" };
+            //args = new string[] { "-e", "systemcontrolled_VERB" };
+            args = new string[] { "-u", "1", "s" };
             if(args.Length == 2 && args[0] == "-d") {
                 NgramDataGrabber.DownloadTo(args[1], new GrabberCallbackObject());
             } else if(args.Length == 2 && args[0] == "-e") {
@@ -24,7 +24,7 @@ namespace ngram {
                     Console.WriteLine("  Year: {0}\tTotal: {1}\tBooks: {2}", entry.Year, entry.OccurencesCount, entry.DistinctBooksCount);
                 Console.WriteLine("Fetched in " + ((double)sw.ElapsedMilliseconds / 1000).ToString("#.###") + " seconds.");
             } else if(args.Length == 3 && args[0] == "-u") {
-                OfflineGoogleNgramProvider ngrams = new OfflineGoogleNgramProvider("E:\\ngramdata");
+                OfflineGoogleNgramProvider ngrams = new OfflineGoogleNgramProvider("C:\\ngramdata");
                 System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
                 ngrams.Optimize(args[1], args[2]);

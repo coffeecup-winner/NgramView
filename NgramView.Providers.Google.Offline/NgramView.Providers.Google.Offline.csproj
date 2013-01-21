@@ -46,6 +46,7 @@
     <Compile Include="Grabber\NgramDataGrabber.cs" />
     <Compile Include="OfflineGoogleNgramProvider.cs" />
     <Compile Include="OptimizedData\OptimizedNgramData.cs" />
+    <Compile Include="OptimizedData\OptimizedNgramEntry.cs" />
     <Compile Include="OptimizedData\OptimizedNgramYearEntry.cs" />
     <Compile Include="OptimizedData\OptimizedNgramHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

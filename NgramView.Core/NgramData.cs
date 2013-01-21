@@ -20,7 +20,6 @@ namespace NgramView.Data {
 
         public NgramDataEntry(string ngram) {
             Ngram = ngram;
-            
         }
         public string Ngram { get; private set; }
         public IEnumerable<NgramYearEntry> YearEntries { get { return yearEntries; } }
@@ -29,6 +28,9 @@ namespace NgramView.Data {
         }
         public void Add(NgramYearEntry entry) {
             this.yearEntries.Add(entry);
+        }
+        public void Sort() {
+            this.yearEntries.Sort((a, b) => a.Year.CompareTo(b.Year));
         }
     }
 }

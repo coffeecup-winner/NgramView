@@ -40,14 +40,12 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             else
                 PackNormal(entry, (int)Math.Ceiling((double)Math.Max(minBitsForOccurencesCount, minBitsForBooksCount) / 8));
         }
-        public OptimizedNgramYearEntry(Stream stream) {
-            byte[] firstByte = new byte[1];
-            int check = stream.Read(firstByte, 0, 1);
-            Debug.Assert(1 == check);
-            if((firstByte[0] & FlagShortEntry) == FlagShortEntry)
-                this.entry = UnpackShort(stream, firstByte[0]);
+        public OptimizedNgramYearEntry(byte[] bytes, int index) {
+            byte firstByte = bytes[index];
+            if((firstByte & FlagShortEntry) == FlagShortEntry)
+                this.entry = UnpackShort(bytes, index);
             else
-                this.entry = UnpackNormal(stream, firstByte[0]);
+                this.entry = UnpackNormal(bytes, index);
         }
         void PackShort(NgramYearEntry entry) {
             this.bytesCount = 1;
@@ -73,9 +71,10 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             for(int i = 0; i < minBytes; i++)
                 bytes[minBytes + i] = buffer[i];
         }
-        NgramYearEntry UnpackShort(Stream stream, byte firstByte) {
+        NgramYearEntry UnpackShort(byte[] bytes, int index) {
             this.bytesCount = 1;
             this.bytes = new byte[BytesCount];
+            byte firstByte = bytes[index];
             this.bytes[0] = firstByte;
             byte[] buffer = new byte[sizeof(int)];
             firstByte &= ClearHighBitMask;
@@ -86,27 +85,26 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             int occurencesCount = BitConverter.ToInt32(buffer, 0);
             return new NgramYearEntry(-1, occurencesCount, distinctBooksCount);
         }
-        NgramYearEntry UnpackNormal(Stream stream, byte firstByte) {
+        NgramYearEntry UnpackNormal(byte[] bytes, int index) {
             int minBytes = 1;
+            byte firstByte = bytes[index];
             if((firstByte & FlagAddByte) == FlagAddByte)
                 minBytes++;
             if((firstByte & FlagAddTwoBytes) == FlagAddTwoBytes)
                 minBytes += 2;
             this.bytesCount = minBytes * 2;
             this.bytes = new byte[BytesCount];
-            bytes[0] = firstByte;
-            int check = stream.Read(bytes, 1, BytesCount - 1);
-            Debug.Assert(BytesCount - 1 == check);
+            Array.Copy(bytes, index, this.bytes, 0, BytesCount);
             byte[] buffer = new byte[sizeof(int)];
-            buffer[0] = (byte)(bytes[0] & ClearFlagsMask);
+            buffer[0] = (byte)(this.bytes[0] & ClearFlagsMask);
             for(int i = 1; i < minBytes; i++) {
-                buffer[i - 1] |= (byte)(bytes[i] << 5);
-                buffer[i] = (byte)((bytes[i] >> 3) & ClearFlagsMask);
+                buffer[i - 1] |= (byte)(this.bytes[i] << 5);
+                buffer[i] = (byte)((this.bytes[i] >> 3) & ClearFlagsMask);
             }
             int distinctBooksCount = BitConverter.ToInt32(buffer, 0);
             buffer = new byte[sizeof(int)];
             for(int i = 0; i < minBytes; i++)
-                buffer[i] = bytes[minBytes + i];
+                buffer[i] = this.bytes[minBytes + i];
             int occurencesCount = BitConverter.ToInt32(buffer, 0);
             return new NgramYearEntry(-1, occurencesCount, distinctBooksCount);
         }

@@ -30,6 +30,7 @@ namespace NgramView.Providers.Google.Offline {
                 }
                 line = reader.ReadLine();
             } while(line.StartsWith(ngram));
+            dataEntry.Sort();
             return dataEntry;
         }
     }

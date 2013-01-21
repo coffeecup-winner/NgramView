@@ -10,7 +10,6 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
     unsafe public class OptimizedNgramHeader {
         List<OptimizedNgramHeaderEntry> entries = new List<OptimizedNgramHeaderEntry>();
         HeaderTableEntry[] headerTable;
-        List<HeaderTableEntry> searchableHeaderTable;
 
         public OptimizedNgramHeader() { }
         public OptimizedNgramHeader(Stream stream) {

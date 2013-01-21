@@ -24,9 +24,7 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
                         Debug.Assert(outStream.Position <= uint.MaxValue);
                         var prevHeaderEntry = header.Add(dataEntry.Ngram, (uint)outStream.Position);
                         new OptimizedNgramDataEntry(dataEntry).WriteTo(outStream);
-                        //foreach(var yearEntry in dataEntry.YearEntries)
-                        //    WriteEntry(outStream, yearEntry);
-                        prevHeaderEntry.EndOffset = (uint)outStream.Position;
+                        prevHeaderEntry.Length = (uint)outStream.Position - prevHeaderEntry.Offset;
                     }
                 }
                 header.Build();
@@ -42,7 +40,7 @@ namespace NgramView.Providers.Google.Offline.OptimizedData {
             }
             using(FileStream stream = File.OpenRead(FilePath.Replace(".idx", ".dat"))) {
                 stream.Seek(headerEntry.Offset, SeekOrigin.Begin);
-                return new OptimizedNgramDataEntry(ngram, stream, (int)(headerEntry.EndOffset - headerEntry.Offset)).Entry;
+                return new OptimizedNgramDataEntry(ngram, stream, (int)headerEntry.Length).Entry;
             }
         }
         void WriteEntry(Stream stream, NgramYearEntry yearEntry) {

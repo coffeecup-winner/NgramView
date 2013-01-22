@@ -1,3 +1,11 @@
+# C#
 bin/
 obj/
 *.suo
+
+# C++
+Debug/
+*.sdf
+*.opensdf
+*.ipch
+*.user

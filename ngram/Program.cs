@@ -5,10 +5,12 @@ using System.Text;
 using NgramView.Providers;
 using NgramView.Providers.Google.Offline;
 using NgramView.Providers.Google.Offline.Grabber;
+using System.Runtime.InteropServices;
 
 namespace ngram {
     class Program {
         static void Main(string[] args) {
+            NgramDataFormat.Optimize(@"E:\ngramdata\googlebooks-eng-all-1gram-20120701-s.gz");
             args = new string[] { "-e", "systemcontrolled_VERB" };
             //args = new string[] { "-u", "1", "s" };
             if(args.Length == 2 && args[0] == "-d") {
@@ -34,5 +36,10 @@ namespace ngram {
             Console.Beep();
             Console.ReadKey(true);
         }
+    }
+
+    class NgramDataFormat {
+        [DllImport("NgramDataFormat.dll")]
+        public static extern int Optimize(string filename);
     }
 }

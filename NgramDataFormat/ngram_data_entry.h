@@ -17,6 +17,9 @@ namespace NgramDataFormat {
             occurences_count(occurences_count),
             books_count(books_count) {
         }
+        bool operator < (const NgramYearEntry entry) const {
+            return year < entry.year;
+        }
     };
 
     class NgramDataEntry {
@@ -25,6 +28,8 @@ namespace NgramDataFormat {
 
     public:
         NgramDataEntry() : ngram(), year_entries() { }
+        vector<NgramYearEntry> const * GetYearEntries() const { return &year_entries; }
         bool Add(string line);
+        void Sort();
     };
 }

@@ -5,6 +5,7 @@
 
 #include "ngramdata.h"
 #include "ngram_data_entry.h"
+#include "optimized_ngram_data_entry.h"
 
 #include <boost\iostreams\filtering_stream.hpp>
 #pragma warning(disable: 4244)
@@ -25,9 +26,12 @@ namespace NgramDataFormat {
         in.push(stream);
         string line;
         NgramDataEntry entry;
+        ofstream out("F:\\test.dat", ios_base::out | ios_base::binary);
         for(; getline(in, line);) {
             if(!entry.Add(line)) {
-                //TODO: write
+                entry.Sort();
+                OptimizedNgramDataEntry optimizedEntry(entry);
+                out.write((char*)optimizedEntry.GetBytes(), optimizedEntry.GetBytesCount());
                 entry = NgramDataEntry();
                 entry.Add(line);
             }

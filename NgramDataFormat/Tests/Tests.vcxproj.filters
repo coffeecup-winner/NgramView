@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TestedFiles">
+      <UniqueIdentifier>{03229fd9-445c-4ea7-b6ae-8cd308498449}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -24,43 +27,34 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ngramdata.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\ngram_data_entry.h">
+      <Filter>TestedFiles</Filter>
     </ClInclude>
-    <ClInclude Include="ngram_data_entry.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\optimized_ngram_data_entry.h">
+      <Filter>TestedFiles</Filter>
     </ClInclude>
-    <ClInclude Include="optimized_ngram_data_entry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="optimized_ngram_year_entry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\optimized_ngram_year_entry.h">
+      <Filter>TestedFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NgramDataFormat.cpp">
+    <ClCompile Include="Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="OptimizedNgramDataTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ngramdata.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\ngram_data_entry.cpp">
+      <Filter>TestedFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ngram_data_entry.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\optimized_ngram_data_entry.cpp">
+      <Filter>TestedFiles</Filter>
     </ClCompile>
-    <ClCompile Include="optimized_ngram_data_entry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="optimized_ngram_year_entry.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\optimized_ngram_year_entry.cpp">
+      <Filter>TestedFiles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

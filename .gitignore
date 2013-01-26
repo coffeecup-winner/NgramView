@@ -4,7 +4,9 @@ obj/
 *.suo
 
 # C++
+CodeAnalyst/
 Debug/
+Release/
 *.sdf
 *.opensdf
 *.ipch
